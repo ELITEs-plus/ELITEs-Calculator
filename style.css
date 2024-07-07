@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@font-face {
+    font-family: "SeoulHangangCBL";
+    src: url("./resource/SeoulHangangCBLRegular.ttf") format("truetype");
+}
 
 /* * {
     border: solid 1px red !important;
@@ -32,7 +37,9 @@ h4 {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 }
+
 
 .hidden-banner__control-panel {
     margin-left: 58px;
@@ -105,7 +112,7 @@ h4 {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    height: 122px;
+    height: 120px;
 }
 
 .logo {
@@ -115,7 +122,6 @@ h4 {
 .calculator {
     display: flex;
     justify-content: center;
-    
 }
 
 .calculator__calculator-frame {
@@ -135,7 +141,7 @@ h4 {
     border: 4px solid #92A4B9;
 }
 
-.calculator-frame__monitor-frame {
+.calculator-frame__display-frame {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -146,12 +152,12 @@ h4 {
     margin-top: 56px;
 }
 
-.calculator-frame__monitor-frame--style {
+.calculator-frame__display-frame--style {
     background-color: #A6B1BD;
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.25); 
 }
 
-.monitor-frame__display {
+.display-frame__display {
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -160,7 +166,7 @@ h4 {
     border-radius: 10px;
 }
 
-.monitor-frame__display--style {
+.display-frame__display--style {
     background-color: #E2E4E8;
     box-shadow: inset -4px 0px 2px rgba(0, 0, 0, 0.25),
                 inset 4px 0px 2px rgba(0, 0, 0, 0.25),
@@ -177,5 +183,108 @@ h4 {
 
 .calculator-frame__keys-frame {
     display: grid;
+    width: 444px;
+    height: 448px;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    margin-top: 19px;
+    row-gap: 17px;
 }
+
+button {
+    cursor: pointer;
+}
+
+.button-regular {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+}
+
+.button-regular--style {
+    background-color: #C5D4E5;
+    border: 0.1px solid rgba(46, 70, 98, 0.50);
+    box-shadow: 3px 5px 4px rgba(0, 0, 0, 0.25),
+                inset -6px -2px 6px rgba(46, 70, 98, 0.70),
+                inset 1px -2px 4px rgba(46, 70, 98, 0.25),
+                inset 3px 4px 4px rgba(46, 70, 98, 0.25);
+}
+
+.button__text {
+    font-family: "Poppins", sans-serif;
+    font-size: 45px;
+    color: #2E4662;
+}
+
+.sqrt {
+    font-family: "SeoulHangangCBL", sans-serif;
+    font-size: 36px;
+}
+
+.divide {
+    font-size: 30px;
+}
+
+.multiply {
+    margin-top: 12px;
+}
+
+.power {
+    font-size: 40px;
+}
+
+.superscript {
+    vertical-align: super;
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.button-vertical {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 75px;
+    height: 166px;
+    border-radius: 54px;
+}
+
+.button-horizontal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 166px;
+    height: 75px;
+    border-radius: 54px;
+}
+
+.clear {
+    font-size: 36px;
+}
+
+#plus {
+    grid-row: 2 / 4;
+    grid-column: 5;
+}
+
+#backspace{
+    width: 31px;
+}
+
+#equal {
+    grid-row: 4 / 6;
+    grid-column: 5;
+}
+
+.all-clear {
+    font-size: 36px;
+}
+
+#zero {
+    grid-column: 2 / 4;
+}
+
+
 
