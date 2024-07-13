@@ -52,7 +52,7 @@
 
             <div class="calculator-frame__display-frame calculator-frame__display-frame--style">
                 <div class="display-frame__display display-frame__display--style">
-                    <p class="display-number">0.556</p>
+                    <p class="display-number" id="display-num">0</p>
                 </div>
             </div>
 
@@ -100,8 +100,8 @@
                     <span class="button__text">+</span>
                 </button>
 
-                <button class="button-regular button-regular--style">
-                    <object data="./resource/DelArrow.svg" type="image/svg+xml" id="backspace"></object>
+                <button class="button-regular button-regular--style"  id="backspace">
+                    <object data="./resource/DelArrow.svg" type="image/svg+xml" class="backspace"></object>
                 </button>
 
                 <button class="button-regular button-regular--style" id="four">
@@ -136,7 +136,7 @@
                     <span class="button__text">=</span>
                 </button>
 
-                <button class="button-regular button-regular--style" id="all-clear">
+                <button class="button-regular button-regular--style" id="allClear">
                     <span class="button__text all-clear">AC</span>
                 </button>
 
@@ -152,6 +152,7 @@
         </div>
     </section>
 
+    <script src="display.js"></script>
 
 </body>
 </html>
