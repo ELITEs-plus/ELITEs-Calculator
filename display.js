@@ -3,55 +3,59 @@ let operationHolder = [];
 let toDisplay = document.getElementById("display-num")
 let num1 = 0;
 let num2 = 0;
+let numberHolder1 = 0;
+let numberHolder2 = 0;
+let currentOperation;
+let displayHolder = [];
 
 // Define all clickable keys - Number
-let key_zero = document.getElementById("zero");
-let key_one = document.getElementById("one");
-let key_two = document.getElementById("two");
-let key_three = document.getElementById("three");
-let key_four = document.getElementById("four");
-let key_five = document.getElementById("five");
-let key_six = document.getElementById("six");
-let key_seven = document.getElementById("seven");
-let key_eight = document.getElementById("eight");
-let key_nine = document.getElementById("nine");
+let keyZero = document.getElementById("zero");
+let keyOne = document.getElementById("one");
+let keyTwo = document.getElementById("two");
+let keyThree = document.getElementById("three");
+let keyFour = document.getElementById("four");
+let keyFive = document.getElementById("five");
+let keySix = document.getElementById("six");
+let keySeven = document.getElementById("seven");
+let keyEight = document.getElementById("eight");
+let keyNine = document.getElementById("nine");
 
 // define all clickable keys - Operation
-let key_plus = document.getElementById("plus");
-let key_minus = document.getElementById("minus");
-let key_multi = document.getElementById("multiply");
-let key_divide = document.getElementById("divide");
-let key_sqrt = document.getElementById("sqrt");
-let key_power = document.getElementById("power");
-let key_percent = document.getElementById("percent");
+let keyPlus = document.getElementById("plus");
+let keyMinus = document.getElementById("minus");
+let keyMulti = document.getElementById("multiply");
+let keyDivide = document.getElementById("divide");
+let keySqrt = document.getElementById("sqrt");
+let keyPower = document.getElementById("power");
+let keyPercent = document.getElementById("percent");
 
 // define all clickable keys - Utility
-let key_dot = document.getElementById("dot");
-let key_equal = document.getElementById("equal");
-let key_backspace = document.getElementById("backspace");
-let key_clear = document.getElementById("clear");
-let key_allClear = document.getElementById("allClear");
+let keyDot = document.getElementById("dot");
+let keyEqual = document.getElementById("equal");
+let keyBackspace = document.getElementById("backspace");
+let keyClear = document.getElementById("clear");
+let keyAllClear = document.getElementById("allClear");
 
 // Define eventListener - for adding number
-key_zero.addEventListener("click", () => addToDisplay(displayNumber, 0));
-key_one.addEventListener("click", () => addToDisplay(displayNumber, 1));
-key_two.addEventListener("click", () => addToDisplay(displayNumber, 2));
-key_three.addEventListener("click", () => addToDisplay(displayNumber, 3));
-key_four.addEventListener("click", () => addToDisplay(displayNumber, 4));
-key_five.addEventListener("click", () => addToDisplay(displayNumber, 5));
-key_six.addEventListener("click", () => addToDisplay(displayNumber, 6));
-key_seven.addEventListener("click", () => addToDisplay(displayNumber, 7));
-key_eight.addEventListener("click", () => addToDisplay(displayNumber, 8));
-key_nine.addEventListener("click", () => addToDisplay(displayNumber, 9));
-key_dot.addEventListener("click", () => addToDisplay(displayNumber, "."));
+keyZero.addEventListener("click", () => addToDisplay(displayNumber, 0));
+keyOne.addEventListener("click", () => addToDisplay(displayNumber, 1));
+keyTwo.addEventListener("click", () => addToDisplay(displayNumber, 2));
+keyThree.addEventListener("click", () => addToDisplay(displayNumber, 3));
+keyFour.addEventListener("click", () => addToDisplay(displayNumber, 4));
+keyFive.addEventListener("click", () => addToDisplay(displayNumber, 5));
+keySix.addEventListener("click", () => addToDisplay(displayNumber, 6));
+keySeven.addEventListener("click", () => addToDisplay(displayNumber, 7));
+keyEight.addEventListener("click", () => addToDisplay(displayNumber, 8));
+keyNine.addEventListener("click", () => addToDisplay(displayNumber, 9));
+keyDot.addEventListener("click", () => addToDisplay(displayNumber, "."));
 
 // define eventListener - for removing number
-key_backspace.addEventListener("click", () => deleteNumber(displayNumber));
-key_clear.addEventListener("click", () => clearNumber());
-key_allClear.addEventListener("click", () => clearNumber());
-key_plus.addEventListener("click", () => pressAdd());
-
-key_equal.addEventListener("click", () => pressEqual());
+keyBackspace.addEventListener("click", () => deleteNumber(displayNumber));
+keyClear.addEventListener("click", () => clearNumber());
+keyAllClear.addEventListener("click", () => clearAllNumber());
+keyPlus.addEventListener("click", () => pressOperation(keyPlus));
+keyMulti.addEventListener("click", () => pressOperation(keyMulti));
+keyEqual.addEventListener("click", () => pressEqual());
 
 // Define operation object
 const operator = {
@@ -64,22 +68,25 @@ const operator = {
     resetOperation: function() {
         for (let key in this) {
             if (this.hasOwnProperty(key) && typeof this[key] !== "function") {
-                this[key] = false;
+                this[`${key}`] = false;
             }
         }
     },
 
-    setOperation: function(operation) {
-        if (this.hasOwnProperty(operation)) {
-            this.resetOperation();
-            this[operation] = true;
+    setOperation: function(operator) {
+        this.resetOperation();
+        switch (true) {
+            case operator === keyPlus:
+                this.plus = true;
+            case operator === keyMulti:
+                this.multiply = true;
         }
     },
 
     checkOperation: function() {
         for (let key in this) {
             if (this.hasOwnProperty(key) && typeof this[key] !== "function") {
-                if (this[key]=true) {
+                if (this[key]) {
                     return true;
                 }
             }
@@ -91,17 +98,27 @@ const operator = {
         return num1 + num2;
     },
 
+    multiplyOperation: function(num1, num2) {
+        return num1 * num2;
+    },
+
     runOperation: function(num1, num2) {
         switch (true) {
             case this.plus :
-                console.log("Its add!")
                 return this.plusOperation(num1, num2);
+            case this.multiply:
+                return this.multiplyOperation(num1, num2);
         }
     },
+
+    roundOff: function(num) {
+        return Math.round(num * 100) /100;
+    }
 };
 
 // Display functions
 const addToDisplay  = (arr, val) => {
+
     // Check max length
     if (arr.length === 11) {
         return
@@ -137,37 +154,55 @@ const clearNumber = () => {
     toDisplay.innerHTML = "0";
 }
 
-const resetStyle = (key) => {
-    key.style.border = "0.1px solid rgba(46, 70, 98, 0.50)";
-    key.style.color = "#2E4662";
-    key.style.boxShadow = "3px 5px 4px rgba(0, 0, 0, 0.25), inset -6px -2px 6px rgba(46, 70, 98, 0.70), inset 1px -2px 4px rgba(46, 70, 98, 0.25), inset 3px 4px 4px rgba(46, 70, 98, 0.25)";
-};
-
-// Math operations
-const pressAdd = () => {
-    num1 = Number(displayNumber.join(""));
-    displayNumber = [];
-    operationHolder.push(key_plus);
-    key_plus.style.border = "2.5px solid #FFFFFF";
-    key_plus.style.color = "#FFFFFF";
-    key_plus.style.boxShadow = "3px 5px 4px rgba(0, 0, 0, 0.25), inset 0px 0px 0px rgba(46, 70, 98, 0.70), inset -1px -2px 4px rgba(46, 70, 98, 0.25), inset 1px -2px 4px rgba(46, 70, 98, 0.10)"
+const clearAllNumber = () => {
+    clearNumber();
+    num1 = 0;
+    num2 = 0;
+    numberHolder1 = 0;
+    numberHolder2 = 0;
 }
 
-const pressEqual = () => {
-    if (operator.checkOperation()) {
+// Math operations
+const pressOperation = (key) => {
 
-        if (operationHolder.length !== 0) {
-            resetStyle(operationHolder[0]);
+    // Check chain
+    if (Number(toDisplay.innerHTML) !== Number(displayHolder[0])) {
+        num1 = Number(displayNumber.join(""));
+    } else {
+        num1 = numberHolder1;
+    }
+
+    displayNumber = [];
+    operationHolder = [];
+    currentOperation = key;
+    operator.setOperation(key)
+    key.classList.add("button--pressed");
+};
+
+const pressEqual = () => {
+
+    currentOperation.classList.remove("button--pressed");
+
+    if (operationHolder.length !== 0) {
+        operator.setOperation(operationHolder[0]);
+        num2 = numberHolder2;
+        num1 = numberHolder1;
+        } else {
+            num2 = Number(displayNumber.join(""));
+            numberHolder2 = num2;
         }
 
-        let answer = 0;
-        num2 = Number(displayNumber.join(""));
-        answer = operator.runOperation(num1, num2);
-        toDisplay.innerHTML = answer.toString();
+        let answer = operator.runOperation(num1, num2);
+        answer = operator.roundOff(answer);
+        toDisplay.innerHTML = answer;
+
+        numberHolder1 = answer;
+        operator.resetOperation();
+        operationHolder = [currentOperation];
+        displayHolder = [answer];
         displayNumber = [];
-        operationHolder = [];
     }
-};
+
 
 
 // const convertToScientific = (string) => {
