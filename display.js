@@ -46,7 +46,9 @@ keyBackspace.addEventListener("click", () => utility.deleteNumber(display.curren
 keyClear.addEventListener("click", () => utility.clearNumber());
 keyAllClear.addEventListener("click", () => utility.clearAllNumber());
 keyPlus.addEventListener("click", () => pressOperation(keyPlus));
+keyMinus.addEventListener("click", () => pressOperation(keyMinus));
 keyMulti.addEventListener("click", () => pressOperation(keyMulti));
+keyDivide.addEventListener("click", () => pressOperation(keyDivide));
 keyEqual.addEventListener("click", () => pressEqual());
 
 // Define operation object
@@ -73,6 +75,10 @@ const operator = {
                 this.plus = true;
             case operator === keyMulti:
                 this.multiply = true;
+            case operator === keyMinus:
+                this.minus = true;
+            case operator === keyDivide:
+                this.divide = true;
         }
     },
 
@@ -91,8 +97,20 @@ const operator = {
         return num1 + num2;
     },
 
+    subtractOperation: function(num1, num2) {
+        return num1 - num2;
+    },
+
     multiplyOperation: function(num1, num2) {
         return num1 * num2;
+    },
+
+    divisionOperation: function(num1, num2) {
+        if (num2 !== 0) {
+            return num1 / num2;
+        } else {
+            return "0 Division"
+        }
     },
 
     runOperation: function(num1, num2) {
@@ -101,11 +119,19 @@ const operator = {
                 return this.plusOperation(num1, num2);
             case this.multiply:
                 return this.multiplyOperation(num1, num2);
+            case this.minus:
+                return this.subtractOperation(num1, num2);
+            case this.divide:
+                return this.divisionOperation(num1, num2);
         }
     },
 
     roundOff: function(num) {
-        return Math.round(num * 100) /100;
+        if (typeof num === "number") {
+            return Math.round(num * 100) /100;
+        } else {
+            return num;
+        }
     }
 };
 
@@ -209,6 +235,7 @@ const utility = {
     
     clearNumber: function() {
         display.currentNumberArr = [];
+        display.currentNumber = "";
         toDisplay.innerHTML = "0";
     },
     
@@ -251,12 +278,18 @@ const pressEqual = () => {
     operator.isHolding = false;
     memory.isComplete = true;
     memory.prevOperation.classList.remove("button--pressed");
-
+    
     let answer = operator.runOperation(memory.num1, memory.num2);
     answer = operator.roundOff(answer);
-
     display.currentNumber = String(answer);
     toDisplay.innerHTML = display.currentNumber;
-    display.updateNumberArr();
-    memory.num1 = answer;
+
+    if (typeof answer === "number") {
+        display.updateNumberArr();
+        memory.num1 = answer;
+    } else {
+        memory.num1 = 0;
+        display.currentNumber = "0";
+        display.currentNumberArr = [];
+    }
     }
