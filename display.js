@@ -29,22 +29,22 @@ let keyClear = document.getElementById("clear");
 let keyAllClear = document.getElementById("allClear");
 
 // Define eventListener - for adding number
-keyZero.addEventListener("click", () => display.addToDisplay(0));
-keyOne.addEventListener("click", () => display.addToDisplay(1));
-keyTwo.addEventListener("click", () => display.addToDisplay(2));
-keyThree.addEventListener("click", () => display.addToDisplay(3));
-keyFour.addEventListener("click", () => display.addToDisplay(4));
-keyFive.addEventListener("click", () => display.addToDisplay(5));
-keySix.addEventListener("click", () => display.addToDisplay(6));
-keySeven.addEventListener("click", () => display.addToDisplay(7));
-keyEight.addEventListener("click", () => display.addToDisplay(8));
-keyNine.addEventListener("click", () => display.addToDisplay(9));
+keyZero.addEventListener("click", () => display.addToDisplay("0"));
+keyOne.addEventListener("click", () => display.addToDisplay("1"));
+keyTwo.addEventListener("click", () => display.addToDisplay("2"));
+keyThree.addEventListener("click", () => display.addToDisplay("3"));
+keyFour.addEventListener("click", () => display.addToDisplay("4"));
+keyFive.addEventListener("click", () => display.addToDisplay("5"));
+keySix.addEventListener("click", () => display.addToDisplay("6"));
+keySeven.addEventListener("click", () => display.addToDisplay("7"));
+keyEight.addEventListener("click", () => display.addToDisplay("8"));
+keyNine.addEventListener("click", () => display.addToDisplay("9"));
 keyDot.addEventListener("click", () => display.addToDisplay("."));
 
 // define eventListener - for removing number
 keyBackspace.addEventListener("click", () => utility.deleteNumber(display.currentNumberArr));
-// keyClear.addEventListener("click", () => clearNumber());
-// keyAllClear.addEventListener("click", () => clearAllNumber());
+keyClear.addEventListener("click", () => utility.clearNumber());
+keyAllClear.addEventListener("click", () => utility.clearAllNumber());
 keyPlus.addEventListener("click", () => pressOperation(keyPlus));
 keyMulti.addEventListener("click", () => pressOperation(keyMulti));
 keyEqual.addEventListener("click", () => pressEqual());
@@ -116,27 +116,30 @@ const display = {
     currentNumber: "",
     
     addToDisplay: function(val) {
-    // Check max length
-    if (this.currentNumberArr.length === 11) {
-        return
-    }
+        
+        if (this.currentNumberArr.length === 11) {
+            return
+        }
 
-    if (memory.isComplete === true) {
-        this.currentNumberArr = [];
-        this.currentNumber = "";
-        memory.isComplete = false;
-    }
+        if (memory.isComplete === true) {
+            if (utility.isDeleting === false) {
+                this.currentNumberArr = [];
+                this.currentNumber = "";
+            }
+        }
 
-    if (val === ".") {
-        if (!this.currentNumberArr.includes(".")) {
+        if (val === ".") {
+            if (!this.currentNumberArr.includes(".")) {
+                this.currentNumberArr.push(val);
+            }
+        } else {
             this.currentNumberArr.push(val);
         }
-    } else {
-        this.currentNumberArr.push(val);
-    }
-    this.currentNumber = this.currentNumberArr.join("");
-    toDisplay.innerHTML = this.currentNumber;
-    },
+        memory.isComplete = false;
+        utility.isDeleting = false;
+        this.currentNumber = this.currentNumberArr.join("");
+        toDisplay.innerHTML = this.currentNumber;
+        },
 
     checkDisplayZero: function() {
         if (this.currentNumberArr.length > 0) {
@@ -146,6 +149,13 @@ const display = {
         }
         toDisplay.innerHTML = this.currentNumber;
     },
+
+    updateNumberArr: function() {
+        this.currentNumberArr = [];
+        for (let char of this.currentNumber) {
+            this.currentNumberArr.push(char);
+        }
+    }
 };
 
 
@@ -187,34 +197,41 @@ const memory = {
 // Define utility keys
 const utility = {
 
+    isDeleting: false,
+
     deleteNumber: function(arr) {
+        this.isDeleting = true;
         if (arr.length > 0) {
             arr.pop();
         }
         display.checkDisplayZero();
     },
     
-    // clearNumber: funciton() {
-    //     displayNumber = [];
-    //     toDisplay.innerHTML = "0";
-    // },
+    clearNumber: function() {
+        display.currentNumberArr = [];
+        toDisplay.innerHTML = "0";
+    },
     
-    // const clearAllNumber = () => {
-    //     clearNumber();
-    //     num1 = 0;
-    //     num2 = 0;
-    //     numberHolder1 = 0;
-    //     numberHolder2 = 0;
-    // }
+    clearAllNumber: function() {
+        this.clearNumber();
+        memory.num1 = 0;
+        memory.num2 = 0;
+        memory.prevOperation.classList.remove("button--pressed");
+        operator.resetOperation();
+        operator.isHolding = false;
+        memory.isComplete = false;
+        utility.isDeleting = false;
+    }
 };
 
 
 // Math operations
 const pressOperation = (key) => {
-
+    
     if (memory.isComplete === false) {
         memory.prevOperation.classList.remove("button--pressed");
     }
+    utility.isDeleting = false;
     memory.num1 = display.currentNumber;
     operator.isHolding = true;
     memory.isComplete = false;
@@ -222,10 +239,14 @@ const pressOperation = (key) => {
     key.classList.add("button--pressed");
     operator.setOperation(key)
     display.currentNumberArr = [];
-    display.currentNumber = "";
 };
 
 const pressEqual = () => {
+
+    if (operator.isHolding === false && memory.isComplete === false) {
+        return;
+    }
+    utility.isDeleting = false;
     memory.saveToMemory(display.currentNumber);
     operator.isHolding = false;
     memory.isComplete = true;
@@ -233,8 +254,9 @@ const pressEqual = () => {
 
     let answer = operator.runOperation(memory.num1, memory.num2);
     answer = operator.roundOff(answer);
+
     display.currentNumber = String(answer);
     toDisplay.innerHTML = display.currentNumber;
-
+    display.updateNumberArr();
     memory.num1 = answer;
     }
