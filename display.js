@@ -210,7 +210,7 @@ const memory = {
     set num2(val) {
         this._num2 = Number(val);
     },
-    
+
     saveToMemory: function(number) {
         if (operator.isHolding === true) {
             this.num2 = number;
@@ -248,11 +248,27 @@ const utility = {
         operator.isHolding = false;
         memory.isComplete = false;
         utility.isDeleting = false;
+    },
+
+    checkAnswer: function(answer) {
+        if (typeof answer === "number") {
+            display.updateNumberArr();
+            memory.num1 = answer;
+        } else {
+            memory.num1 = 0;
+            display.currentNumber = "0";
+            display.currentNumberArr = [];
+        }
     }
 };
 
 
 // Math operations
+/**
+ * The function sets the math operation to the user input key
+ * It saves the displaying number to the num1 in memory.
+ * @param {Element} key 
+ */
 const pressOperation = (key) => {
     
     if (memory.isComplete === false) {
@@ -281,15 +297,8 @@ const pressEqual = () => {
     
     let answer = operator.runOperation(memory.num1, memory.num2);
     answer = operator.roundOff(answer);
+
     display.currentNumber = String(answer);
     toDisplay.innerHTML = display.currentNumber;
-
-    if (typeof answer === "number") {
-        display.updateNumberArr();
-        memory.num1 = answer;
-    } else {
-        memory.num1 = 0;
-        display.currentNumber = "0";
-        display.currentNumberArr = [];
-    }
+    utility.checkAnswer(answer);
     }
