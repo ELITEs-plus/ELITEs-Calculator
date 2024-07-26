@@ -42,9 +42,9 @@ keyNine.addEventListener("click", () => display.addToDisplay("9"));
 keyDot.addEventListener("click", () => display.addToDisplay("."));
 
 // define eventListener - for removing number
-keyBackspace.addEventListener("click", () => utility.deleteNumber(display.currentNumberArr));
-keyClear.addEventListener("click", () => utility.clearNumber());
-keyAllClear.addEventListener("click", () => utility.clearAllNumber());
+keyBackspace.addEventListener("click", () => utilityKey.deleteNumber(display.currentNumberArr));
+keyClear.addEventListener("click", () => utilityKey.clearNumber());
+keyAllClear.addEventListener("click", () => utilityKey.clearAllNumber());
 keyPlus.addEventListener("click", () => pressOperation(keyPlus));
 keyMinus.addEventListener("click", () => pressOperation(keyMinus));
 keyMulti.addEventListener("click", () => pressOperation(keyMulti));
@@ -148,7 +148,7 @@ const display = {
         }
 
         if (memory.isComplete === true) {
-            if (utility.isDeleting === false) {
+            if (utilityKey.isDeleting === false) {
                 this.currentNumberArr = [];
                 this.currentNumber = "";
             }
@@ -162,7 +162,7 @@ const display = {
             this.currentNumberArr.push(val);
         }
         memory.isComplete = false;
-        utility.isDeleting = false;
+        utilityKey.isDeleting = false;
         this.currentNumber = this.currentNumberArr.join("");
         toDisplay.innerHTML = this.currentNumber;
         },
@@ -221,7 +221,7 @@ const memory = {
 };
 
 // Define utility keys
-const utility = {
+const utilityKey = {
 
     isDeleting: false,
 
@@ -247,21 +247,94 @@ const utility = {
         operator.resetOperation();
         operator.isHolding = false;
         memory.isComplete = false;
-        utility.isDeleting = false;
+        utilityKey.isDeleting = false;
     },
 
     checkAnswer: function(answer) {
         if (typeof answer === "number") {
+            let checkedAns = utilities.checkNumberLength(answer);
+            
+            display.currentNumber = String(checkedAns);
             display.updateNumberArr();
-            memory.num1 = answer;
+            memory.num1 = checkedAns;
+            return String(checkedAns)
         } else {
             memory.num1 = 0;
             display.currentNumber = "0";
             display.currentNumberArr = [];
+            return answer;
         }
     }
 };
 
+// Define utility functions
+const utilities = {
+    /**
+     * The function defines the number decimal of the number
+     * @param {Number} num 
+     * @returns {Number} - the number of decimal, or 0 if no decimal 
+     */
+    calDecimal: function(num) {
+        let numberStr = String(num);
+        let decimalIndex = numberStr.indexOf(".");
+        if (decimalIndex === -1) {
+            return 0;
+        } else {
+            return numberStr.length - (decimalIndex + 1);
+        }
+    },
+
+    getMaxDecimal: function(num1, num2) {
+        let num1Decimal = this.calDecimal(num1);
+        let num2Decimal = this.calDecimal(num2);
+        if (num1Decimal >= num2Decimal) {
+            return num1Decimal;
+        } else {
+            return num2Decimal;
+        }
+    },
+
+    // Return String
+    roundDecimal: function(num) {
+    
+        let maxMemoryDecimal = this.getMaxDecimal(memory.num1, memory.num2)
+        let numDecimal = this.calDecimal(num);
+
+        let maxDecimal = 0;
+        if (maxMemoryDecimal >= numDecimal) {
+            maxDecimal = maxMemoryDecimal;
+        } else {
+            maxDecimal = numDecimal;
+        }
+        console.log(maxDecimal);
+        if (maxDecimal > 9) {
+            return Number(num.toFixed(9));
+        } else {
+            return Number(num.toFixed(maxDecimal));
+        }
+    },
+
+    checkNumberLength: function(num) {
+        if (String(num).length <= 11) {
+            return num;
+        } else if (this.calDecimal(num) > 11) {
+            let roundNum =  this.roundDecimal(num);
+            // console.log(roundNum)
+            if (roundNum.length > 11) {
+                // scientific
+                console.log("here");
+                return roundNum;
+                
+            } else {
+                return roundNum;
+            }
+        }
+    },
+
+    toScientific: function(num) {
+        // to implement
+    }
+};
 
 // Math operations
 /**
@@ -274,7 +347,7 @@ const pressOperation = (key) => {
     if (memory.isComplete === false) {
         memory.prevOperation.classList.remove("button--pressed");
     }
-    utility.isDeleting = false;
+    utilityKey.isDeleting = false;
     memory.num1 = display.currentNumber;
     operator.isHolding = true;
     memory.isComplete = false;
@@ -289,16 +362,13 @@ const pressEqual = () => {
     if (operator.isHolding === false && memory.isComplete === false) {
         return;
     }
-    utility.isDeleting = false;
+    utilityKey.isDeleting = false;
     memory.saveToMemory(display.currentNumber);
     operator.isHolding = false;
     memory.isComplete = true;
     memory.prevOperation.classList.remove("button--pressed");
     
     let answer = operator.runOperation(memory.num1, memory.num2);
-    answer = operator.roundOff(answer);
-
-    display.currentNumber = String(answer);
-    toDisplay.innerHTML = display.currentNumber;
-    utility.checkAnswer(answer);
+    // Check if the answer is not an error and check decimal
+    toDisplay.innerHTML = utilityKey.checkAnswer(answer);
     }
